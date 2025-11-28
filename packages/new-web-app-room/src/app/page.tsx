@@ -1,84 +1,194 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-const slogans = [
-  "Turn chats into apps",
-  "Prompt. Ship. Repeat.",
-  "Build anything from a chat",
-  "Ideas → Apps, instantly",
-  "From zero to MVP in minutes",
-  "Your cofounder in the command line",
-  "Draft, iterate, deploy",
-  "Ship faster than you can type",
-  "Design in text, deliver in code",
-  "Dream it. Prompt it. Run it.",
-  "Chat-native app building",
-  "From prompt to product",
-  "One prompt, infinite apps",
-  "Stop scaffolding. Start shipping.",
-  "Prototype at the speed of thought",
-  "Make conversations executable"
-];
+interface Person {
+  id: number;
+  name: string;
+  status: 'nice' | 'naughty';
+  reason?: string;
+}
 
-export default function Landing() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+export default function SantaList() {
+  const [people, setPeople] = useState<Person[]>([]);
+  const [newName, setNewName] = useState('');
+  const [newReason, setNewReason] = useState('');
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsVisible(false);
-      setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % slogans.length);
-        setIsVisible(true);
-      }, 400);
-    }, 2800);
+  const addPerson = (status: 'nice' | 'naughty') => {
+    if (newName.trim()) {
+      const newPerson: Person = {
+        id: Date.now(),
+        name: newName.trim(),
+        status,
+        reason: newReason.trim() || undefined
+      };
+      setPeople([...people, newPerson]);
+      setNewName('');
+      setNewReason('');
+    }
+  };
 
-    return () => clearInterval(interval);
-  }, []);
+  const removePerson = (id: number) => {
+    setPeople(people.filter(person => person.id !== id));
+  };
+
+  const toggleStatus = (id: number) => {
+    setPeople(people.map(person => 
+      person.id === id 
+        ? { ...person, status: person.status === 'nice' ? 'naughty' : 'nice' }
+        : person
+    ));
+  };
+
+  const niceList = people.filter(person => person.status === 'nice');
+  const naughtyList = people.filter(person => person.status === 'naughty');
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-black text-white">
-      {/* Enhanced animated aurora background layers */}
-      <div className="absolute inset-0 bg-aurora-layer-1" />
-      <div className="absolute inset-0 bg-aurora-layer-2" />
-      <div className="absolute inset-0 bg-aurora-layer-3" />
-      
-      {/* Floating particles overlay */}
-      <div className="absolute inset-0 bg-particles" />
-      
-      {/* Main content - centered */}
-      <main className="relative z-10 h-full flex flex-col items-center justify-center px-6">
-        <h1 className="text-center text-[clamp(28px,6vw,64px)] font-medium tracking-tight mb-4">
-          Turn Chats into Apps
-        </h1>
-        
-        {/* Rotating slogans */}
-        <div className="mt-4 h-8 md:h-10 overflow-hidden flex items-center justify-center">
-          <span
-            className={`inline-block text-center text-[clamp(18px,3vw,32px)] font-light transition-all duration-[400ms] ease-in-out ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
-            }`}
-          >
-            {slogans[currentIndex]}
-          </span>
+    <div className="min-h-screen bg-gradient-to-b from-red-900 via-green-900 to-red-900 text-white p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-2 text-yellow-300">🎅 Santa's List 🎄</h1>
+          <p className="text-xl text-green-200">Who's been naughty or nice this year?</p>
         </div>
-      </main>
-      
-      {/* Start Prompting arrow pointing left - bottom left */}
-      <div className="absolute left-6 md:left-8 bottom-[5%] z-20 flex items-center gap-3 arrow-point-left">
-        <div className="flex items-center gap-2 text-white/80 font-medium text-sm md:text-base">
-          <svg 
-            className="w-5 h-5 md:w-6 md:h-6 animate-bounce-horizontal" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <span>Start prompting</span>
+
+        {/* Add Person Form */}
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8 border border-white/20">
+          <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Add Someone to the List</h2>
+          <div className="space-y-4">
+            <input
+              type="text"
+              placeholder="Enter name..."
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            />
+            <input
+              type="text"
+              placeholder="Reason (optional)..."
+              value={newReason}
+              onChange={(e) => setNewReason(e.target.value)}
+              className="w-full p-3 rounded-lg bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            />
+            <div className="flex gap-4">
+              <button
+                onClick={() => addPerson('nice')}
+                disabled={!newName.trim()}
+                className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-500 disabled:cursor-not-allowed px-6 py-3 rounded-lg font-semibold transition-colors"
+              >
+                ✨ Add to Nice List
+              </button>
+              <button
+                onClick={() => addPerson('naughty')}
+                disabled={!newName.trim()}
+                className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-500 disabled:cursor-not-allowed px-6 py-3 rounded-lg font-semibold transition-colors"
+              >
+                🔥 Add to Naughty List
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* Lists */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Nice List */}
+          <div className="bg-green-800/30 backdrop-blur-sm rounded-lg p-6 border border-green-400/30">
+            <h2 className="text-2xl font-bold mb-4 text-green-300 flex items-center gap-2">
+              ✨ Nice List ({niceList.length})
+            </h2>
+            {niceList.length === 0 ? (
+              <p className="text-green-200/60 italic">No one on the nice list yet...</p>
+            ) : (
+              <div className="space-y-3">
+                {niceList.map(person => (
+                  <div key={person.id} className="bg-green-700/30 rounded-lg p-4 border border-green-400/20">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-green-100">{person.name}</h3>
+                        {person.reason && (
+                          <p className="text-sm text-green-200/80 mt-1">{person.reason}</p>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => toggleStatus(person.id)}
+                          className="text-red-400 hover:text-red-300 text-sm"
+                          title="Move to naughty list"
+                        >
+                          🔄
+                        </button>
+                        <button
+                          onClick={() => removePerson(person.id)}
+                          className="text-red-400 hover:text-red-300 text-sm"
+                          title="Remove from list"
+                        >
+                          ❌
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Naughty List */}
+          <div className="bg-red-800/30 backdrop-blur-sm rounded-lg p-6 border border-red-400/30">
+            <h2 className="text-2xl font-bold mb-4 text-red-300 flex items-center gap-2">
+              🔥 Naughty List ({naughtyList.length})
+            </h2>
+            {naughtyList.length === 0 ? (
+              <p className="text-red-200/60 italic">No one on the naughty list yet...</p>
+            ) : (
+              <div className="space-y-3">
+                {naughtyList.map(person => (
+                  <div key={person.id} className="bg-red-700/30 rounded-lg p-4 border border-red-400/20">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold text-red-100">{person.name}</h3>
+                        {person.reason && (
+                          <p className="text-sm text-red-200/80 mt-1">{person.reason}</p>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => toggleStatus(person.id)}
+                          className="text-green-400 hover:text-green-300 text-sm"
+                          title="Move to nice list"
+                        >
+                          🔄
+                        </button>
+                        <button
+                          onClick={() => removePerson(person.id)}
+                          className="text-green-400 hover:text-green-300 text-sm"
+                          title="Remove from list"
+                        >
+                          ❌
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Summary */}
+        {people.length > 0 && (
+          <div className="mt-8 text-center bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
+            <h3 className="text-xl font-semibold text-yellow-300 mb-2">🎁 Summary</h3>
+            <p className="text-lg">
+              <span className="text-green-300">{niceList.length} nice</span>
+              {' • '}
+              <span className="text-red-300">{naughtyList.length} naughty</span>
+              {' • '}
+              <span className="text-white">{people.length} total</span>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
