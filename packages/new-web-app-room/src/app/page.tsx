@@ -48,8 +48,8 @@ export default function SantaList() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold mb-2 text-yellow-300">🎅 Santa's List 🎄</h1>
-          <p className="text-xl text-green-200">Who's been naughty or nice this year?</p>
+          <h1 className="text-5xl font-bold mb-2 text-yellow-300">🎅 Naughty Santa 🎄</h1>
+          <p className="text-xl text-green-200">Who&apos;s been naughty or nice this year?</p>
         </div>
 
         {/* Add Person Form */}
@@ -191,4 +191,6 @@ export default function SantaList() {
     </div>
   );
 }
+
+
 
